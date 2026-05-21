@@ -3,11 +3,12 @@
 
 :root {
   /* Brand color system (Strictly no gradients) */
+  /* Main background / highlight branding */
   --primary: #044776;
   --primary-rgb: 4, 71, 118;
   --white: #ffffff;
   
-  /* Strategic Red Accent Color (for high-impact visual spots like warnings & critical metrics) */
+  /* Primary Red Theme (Used globally for CTA buttons, Badges, Titles, and Card Borders) */
   --danger: #dc2626;
   --danger-light: rgba(220, 38, 38, 0.08);
   
@@ -39,7 +40,7 @@ html {
 body {
   font-family: 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;
   color: var(--text-dark);
-  background: var(--bg-light); /* Set body background to light gray-blue so that brilliant white cards (#ffffff) pop with beautiful contrast */
+  background: var(--bg-light); /* Highlight brilliant white cards Pop */
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -73,7 +74,7 @@ img {
 }
 
 .section-light {
-  background: var(--white); /* Alternate section backgrounds using bright solid white */
+  background: var(--white); /* Alternate section backgrounds pop */
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
 }
@@ -102,11 +103,11 @@ img {
   font-weight: 500;
 }
 
-/* Reusable UI - Badge */
+/* Reusable UI - Badge (Globally styled in RED as requested) */
 .badge-pill {
   display: inline-block;
-  color: var(--primary);
-  background: rgba(4, 71, 118, 0.08);
+  color: var(--danger);
+  background: var(--danger-light);
   padding: 8px 16px;
   border-radius: 999px;
   font-size: 14px;
@@ -114,11 +115,6 @@ img {
   margin-bottom: 16px;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-}
-
-.badge-pill-danger {
-  color: var(--danger);
-  background: var(--danger-light);
 }
 
 /* Custom Micro-Animations */
