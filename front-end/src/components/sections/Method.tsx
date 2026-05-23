@@ -37,9 +37,9 @@ export const Method: React.FC = () => {
       id="methode"
     >
       <div className="container method-grid">
-        {/* Left Side: Ebook Cover Showcase with Solid Red Accent Badge */}
-        <div className="ebook-card">
-          <div className="ebook-badge">EBOOK OFFERT</div> {/* Styled in solid danger red */}
+        {/* Left Side: Ebook Cover Showcase with Solid Cyan Accent Badge */}
+        <div className="ebook-card reveal-item">
+          <div className="ebook-badge">EBOOK OFFERT</div> {/* Styled in solid danger cyan */}
           <div className="ebook-icon">
             <BookOpen size={48} />
           </div>
@@ -55,18 +55,18 @@ export const Method: React.FC = () => {
 
         {/* Right Side: Step Checklist */}
         <div className="method-content">
-          <Badge>De la méthode aux décisions</Badge>
-          <h2 className="section-title">
+          <Badge className="reveal-item">De la méthode aux décisions</Badge>
+          <h2 className="section-title reveal-item">
             Une approche claire pour passer du constat à <span>l'action.</span>
           </h2>
-          <p className="section-intro">
+          <p className="section-intro reveal-item">
             PlastiData ne se limite pas à afficher des indicateurs. La solution s'appuie sur une logique terrain :
             observer, comprendre, prioriser, agir et pérenniser.
           </p>
 
           <div className="steps-container">
             {steps.map((step) => (
-              <div key={step.num} className="step-card">
+              <div key={step.num} className="step-card reveal-item">
                 <div className="step-num-circle">{step.num}</div>
                 <div className="step-text">
                   <h3 className="step-title">{step.title}</h3>

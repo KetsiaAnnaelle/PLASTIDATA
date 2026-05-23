@@ -8,9 +8,9 @@
   --primary-rgb: 4, 71, 118;
   --white: #ffffff;
   
-  /* Primary Red Theme (Used globally for CTA buttons, Badges, Titles, and Card Borders) */
-  --danger: #dc2626;
-  --danger-light: rgba(220, 38, 38, 0.08);
+  /* Primary Cyan Theme (#1dbde8 / rgb(29, 189, 232)) - Swapped from Red globally */
+  --danger: #1dbde8;
+  --danger-light: rgba(29, 189, 232, 0.08);
   
   /* Solid supporting background and text colors */
   --bg-light: #f5f8fc;
@@ -103,7 +103,7 @@ img {
   font-weight: 500;
 }
 
-/* Reusable UI - Badge (Globally styled in RED as requested) */
+/* Reusable UI - Badge (Globally styled in Cyan as requested) */
 .badge-pill {
   display: inline-block;
   color: var(--danger);
@@ -161,12 +161,12 @@ img {
 .border-danger { border-color: var(--danger) !important; }
 
 /* --------------------------------------------------
-   Scroll-Reveal Animation Styles
+   Scroll-Reveal Animation Styles (Parent & Staggered Child Reveal Items)
    -------------------------------------------------- */
 
 .reveal-section {
   opacity: 0;
-  transform: translateY(36px);
+  transform: translateY(24px);
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity;
@@ -176,3 +176,29 @@ img {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Children reveal elements to fade in sequentially once the parent is revealed */
+.reveal-section .reveal-item {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.reveal-section.revealed .reveal-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered delay mapping for up to 10 child elements */
+.reveal-section.revealed .reveal-item:nth-child(1) { transition-delay: 60ms; }
+.reveal-section.revealed .reveal-item:nth-child(2) { transition-delay: 120ms; }
+.reveal-section.revealed .reveal-item:nth-child(3) { transition-delay: 180ms; }
+.reveal-section.revealed .reveal-item:nth-child(4) { transition-delay: 240ms; }
+.reveal-section.revealed .reveal-item:nth-child(5) { transition-delay: 300ms; }
+.reveal-section.revealed .reveal-item:nth-child(6) { transition-delay: 360ms; }
+.reveal-section.revealed .reveal-item:nth-child(7) { transition-delay: 420ms; }
+.reveal-section.revealed .reveal-item:nth-child(8) { transition-delay: 480ms; }
+.reveal-section.revealed .reveal-item:nth-child(9) { transition-delay: 540ms; }
+.reveal-section.revealed .reveal-item:nth-child(10) { transition-delay: 600ms; }

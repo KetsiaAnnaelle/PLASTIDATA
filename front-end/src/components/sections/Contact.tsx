@@ -7,7 +7,6 @@ import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 export const Contact: React.FC = () => {
   // Viewport scroll reveal hook
   const [sectionRef, isRevealed] = useIntersectionObserver();
-  const mailToUrl = "mailto:contact@plastidata.fr?subject=Demande%20de%20d%C3%A9mo%20PlastiData";
 
   return (
     <section 
@@ -17,16 +16,16 @@ export const Contact: React.FC = () => {
     >
       <div className="container">
         <div className="text-center-wrapper">
-          <Badge>Envie d'aller plus loin ?</Badge>
-          <h2 className="section-title">
+          <Badge className="reveal-item">Envie d'aller plus loin ?</Badge>
+          <h2 className="section-title reveal-item">
             Découvrons comment PlastiData peut aider votre usine.
           </h2>
-          <p className="section-intro">
+          <p className="section-intro reveal-item">
             Réservez un échange pour identifier vos besoins, vos données disponibles et les dashboards les plus utiles pour votre contexte.
           </p>
         </div>
 
-        <div className="contact-box-container">
+        <div className="contact-box-container reveal-item">
           <div className="contact-info-block">
             <h3 className="contact-title">Contact PlastiData</h3>
             
@@ -44,7 +43,7 @@ export const Contact: React.FC = () => {
           
           <div className="contact-action-block">
             <Button
-              href={mailToUrl}
+              href="/contact"
               variant="primary"
               className="cta-demo-btn"
             >

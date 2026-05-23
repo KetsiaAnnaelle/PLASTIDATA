@@ -27,7 +27,7 @@ export const Dashboards: React.FC = () => {
         { label: 'PPM', val: '41K' },
         { label: 'Rebut', val: '4,1%' },
         { label: 'NC', val: '17K' },
-        { label: 'Lots', val: '20' }, // Critical KPI (will be highlighted in red)
+        { label: 'Lots', val: '20' }, // Critical KPI
       ],
       bars: [90, 78, 62, 48],
       activePillIndex: 0,
@@ -49,7 +49,7 @@ export const Dashboards: React.FC = () => {
     {
       id: 'donnees',
       title: 'Dashboard Données',
-      desc: 'Fiabilisez vos sources, mesurez la complétude, détectez les anomalies et sécurisez vos décisions.',
+      desc: 'Fiabilisez vos sources, measurez la complétude, détectez les anomalies et sécurisez vos décisions.',
       tags: ['Complétude', 'Doublons', 'Anomalies', 'Sources'],
       kpis: [
         { label: 'Complétude', val: '92,5%' },
@@ -68,7 +68,7 @@ export const Dashboards: React.FC = () => {
       kpis: [
         { label: 'Actions', val: '40' },
         { label: 'Clôture', val: '20%' },
-        { label: 'Retard', val: '40' }, // Critical KPI (will be highlighted in red)
+        { label: 'Retard', val: '40' }, // Critical KPI
         { label: 'Récidives', val: '7' },
       ],
       bars: [100, 85, 50, 50],
@@ -99,11 +99,11 @@ export const Dashboards: React.FC = () => {
     >
       <div className="container">
         <div className="text-center-wrapper">
-          <Badge>Écosystème PlastiData</Badge>
-          <h2 className="section-title">
+          <Badge className="reveal-item">Écosystème PlastiData</Badge>
+          <h2 className="section-title reveal-item">
             4 tableaux de bord pour piloter votre performance industrielle à <span>360°.</span>
           </h2>
-          <p className="section-intro">
+          <p className="section-intro reveal-item">
             Chaque dashboard répond à un pilier de la méthode : qualité, process, données et organisation.
             Ensemble, ils donnent une vision complète de vos priorités terrain.
           </p>
@@ -114,7 +114,7 @@ export const Dashboards: React.FC = () => {
             const activePill = activeTabPerCard[card.id] ?? card.activePillIndex;
 
             return (
-              <article key={card.id} className="dashboard-card">
+              <article key={card.id} className="dashboard-card reveal-item">
                 {/* Mockup Dashboard Preview Container */}
                 <div className="dashboard-preview">
                   {/* Left Menu inside Mockup */}
@@ -135,7 +135,7 @@ export const Dashboards: React.FC = () => {
                     {/* Mini stats row */}
                     <div className="mini-kpis">
                       {card.kpis.map((kpi, kIdx) => {
-                        // Highlight critical KPIs like Quality blocked lots ("Lots") or Organisation delays ("Retard") in red
+                        // Highlight critical KPIs like Quality blocked lots ("Lots") or Organisation delays ("Retard") in cyan
                         const isRedAlertKpi = (card.id === 'qualite' && kpi.label === 'Lots') || 
                                              (card.id === 'organisation' && kpi.label === 'Retard');
 
@@ -156,9 +156,9 @@ export const Dashboards: React.FC = () => {
                       <div className="mini-chart">
                         <div className="mini-bars">
                           {card.bars.map((height, barIdx) => {
-                            // Highlight the largest bar in red in Qualité or Organisation dashboards
+                            // Highlight the largest bar in cyan in Qualité or Organisation dashboards
                             const isRedBar = (card.id === 'qualite' && barIdx === 0) || 
-                                            (card.id === 'organisation' && barIdx === 0);
+                                             (card.id === 'organisation' && barIdx === 0);
 
                             return (
                               <span

@@ -34,17 +34,17 @@ export const Hero: React.FC = () => {
       <div className="container hero-grid">
         {/* Left Side: Text Details */}
         <div className="hero-content">
-          <Badge>La data au cœur de la plasturgie</Badge>
-          <h1 className="hero-title">
+          <Badge className="reveal-item">La data au cœur de la plasturgie</Badge>
+          <h1 className="hero-title reveal-item">
             Sortez du mode urgence. <span className="hero-title-highlight">Pilotez avec méthode.</span>
           </h1>
-          <p className="hero-text">
+          <p className="hero-text reveal-item">
             PlastiData aide les industriels de la plasturgie à transformer leurs données qualité, process, 
             données et organisation en décisions concrètes pour améliorer durablement la performance.
           </p>
           
-          <div className="hero-actions">
-            <Button href="#dashboards" variant="primary">
+          <div className="hero-actions reveal-item">
+            <Button href="/contact" variant="primary">
               Découvrir les dashboards
             </Button>
             <Button href="#methode" variant="secondary">
@@ -52,7 +52,7 @@ export const Hero: React.FC = () => {
             </Button>
           </div>
 
-          <div className="hero-proof">
+          <div className="hero-proof reveal-item">
             <div className="proof-card">
               <strong className="proof-val">4</strong>
               <p className="proof-desc">tableaux de bord complémentaires</p>
@@ -62,14 +62,14 @@ export const Hero: React.FC = () => {
               <p className="proof-desc">vision qualité, process, data et organisation</p>
             </div>
             <div className="proof-card">
-              <strong className="proof-val text-danger">Terrain</strong> {/* Strategic red highlight text */}
+              <strong className="proof-val text-danger">Terrain</strong> {/* Strategic cyan highlight text */}
               <p className="proof-desc">une méthode issue de l'industrie</p>
             </div>
           </div>
         </div>
 
         {/* Right Side: Mockup Interactive Dashboard */}
-        <div className="hero-visual">
+        <div className="hero-visual reveal-item">
           <div className="dashboard-frame">
             <div className="dashboard-screen">
               <div className="screen-header">
@@ -89,7 +89,7 @@ export const Hero: React.FC = () => {
                 </div>
               </div>
 
-              {/* Stat/KPI Card Grid with red alert highlighted lot limits */}
+              {/* Stat/KPI Card Grid with cyan alert highlighted lot limits */}
               <div className="kpi-grid">
                 <div className="kpi-card">
                   <span className="kpi-label">PPM Global</span>
@@ -104,7 +104,7 @@ export const Hero: React.FC = () => {
                   <strong className="kpi-value">{metrics.nc}</strong>
                 </div>
                 
-                {/* Highlighted lots card styled in red since blocked products are critical alerts */}
+                {/* Highlighted lots card styled in cyan since blocked products are critical alerts */}
                 <div className="kpi-card critical-alert">
                   <span className="kpi-label">Lots bloqués</span>
                   <strong className="kpi-value">{metrics.blocked}</strong>
@@ -116,7 +116,7 @@ export const Hero: React.FC = () => {
                   <strong className="chart-title">Pareto défauts qualité</strong>
                   <div className="bars-container">
                     <div className="bar-wrapper">
-                      {/* Strategic red column accent for the major failure category (Fissure) */}
+                      {/* Strategic cyan column accent for the major failure category (Fissure) */}
                       <div className="bar-fill accent-red-bar" style={{ height: '96%' }}></div>
                       <span className="bar-label">Fissure</span>
                     </div>
@@ -159,8 +159,8 @@ export const Hero: React.FC = () => {
                       <circle cx="60" cy="75" r="4.5" fill="#044776" />
                       <circle cx="160" cy="35" r="4.5" fill="#044776" />
                       
-                      {/* Highlight key visual coordinate in warning red */}
-                      <circle cx="260" cy="20" r="5" fill="#dc2626" />
+                      {/* Highlight key visual coordinate in warning cyan */}
+                      <circle cx="260" cy="20" r="5" fill="#1dbde8" />
                     </svg>
                     
                     <div className="trend-labels">

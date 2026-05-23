@@ -1,5 +1,6 @@
 import React from 'react';
 import { Mail, Globe, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -9,10 +10,10 @@ export const Footer: React.FC = () => {
       <div className="container footer-grid">
         {/* Column 1: Brand Info */}
         <div className="footer-col brand-col">
-          <a href="#" className="logo footer-logo" aria-label="Accueil PlastiData">
+          <Link to="/" className="logo footer-logo" aria-label="Accueil PlastiData">
             <span className="logo-icon">▰</span>
             <span className="logo-text">PlastiData<span className="logo-accent">.</span></span>
-          </a>
+          </Link>
           <p className="footer-brand-text">
             La data au cœur de la plasturgie. Nous aidons les industriels de la production à structurer leurs données qualité et process pour passer du mode urgence au pilotage terrain pérenne.
           </p>
@@ -23,25 +24,25 @@ export const Footer: React.FC = () => {
           <h4 className="footer-col-title">Navigation</h4>
           <ul className="footer-links-list">
             <li>
-              <a href="#methode" className="footer-link">
+              <a href="/#methode" className="footer-link">
                 <ArrowRight size={14} className="bullet-arrow" />
                 <span>Notre Méthode</span>
               </a>
             </li>
             <li>
-              <a href="#dashboards" className="footer-link">
+              <a href="/#dashboards" className="footer-link">
                 <ArrowRight size={14} className="bullet-arrow" />
                 <span>Nos Dashboards</span>
               </a>
             </li>
             <li>
-              <a href="#offre" className="footer-link">
+              <a href="/#offre" className="footer-link">
                 <ArrowRight size={14} className="bullet-arrow" />
                 <span>Notre Offre</span>
               </a>
             </li>
             <li>
-              <a href="#benefices" className="footer-link">
+              <a href="/#benefices" className="footer-link">
                 <ArrowRight size={14} className="bullet-arrow" />
                 <span>Bénéfices client</span>
               </a>
@@ -54,25 +55,25 @@ export const Footer: React.FC = () => {
           <h4 className="footer-col-title">Écosystème</h4>
           <ul className="footer-links-list">
             <li>
-              <a href="#dashboards" className="footer-link">
+              <a href="/#dashboards" className="footer-link">
                 <ArrowRight size={14} className="bullet-arrow" />
                 <span>Dashboard Qualité</span>
               </a>
             </li>
             <li>
-              <a href="#dashboards" className="footer-link">
+              <a href="/#dashboards" className="footer-link">
                 <ArrowRight size={14} className="bullet-arrow" />
                 <span>Dashboard Process</span>
               </a>
             </li>
             <li>
-              <a href="#dashboards" className="footer-link">
+              <a href="/#dashboards" className="footer-link">
                 <ArrowRight size={14} className="bullet-arrow" />
                 <span>Dashboard Données</span>
               </a>
             </li>
             <li>
-              <a href="#dashboards" className="footer-link">
+              <a href="/#dashboards" className="footer-link">
                 <ArrowRight size={14} className="bullet-arrow" />
                 <span>Dashboard Organisation</span>
               </a>
@@ -107,9 +108,9 @@ export const Footer: React.FC = () => {
           </p>
           
           <div className="legal-links">
-            <a href="#contact" className="legal-link">Mentions Légales</a>
+            <Link to="/contact" className="legal-link">Mentions Légales</Link>
             <span className="legal-divider">&middot;</span>
-            <a href="#contact" className="legal-link">Politique de Confidentialité</a>
+            <Link to="/contact" className="legal-link">Politique de Confidentialité</Link>
           </div>
         </div>
       </div>

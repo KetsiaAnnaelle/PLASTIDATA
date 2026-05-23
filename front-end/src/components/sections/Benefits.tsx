@@ -9,7 +9,7 @@ export const Benefits: React.FC = () => {
     {
       highlight: '-20 à -40%',
       text: 'de défauts grâce à un meilleur pilotage',
-      isDangerHighlight: true, // Special red contrast highlight on dark background
+      isDangerHighlight: true, // Special cyan contrast highlight on dark background
     },
     {
       highlight: 'Gain de temps',
@@ -37,17 +37,17 @@ export const Benefits: React.FC = () => {
       <div className="container">
         <div className="benefits-card">
           <div className="benefits-info">
-            <h2 className="benefits-title">
+            <h2 className="benefits-title reveal-item">
               Faites de vos données votre meilleur levier de performance.
             </h2>
-            <p className="benefits-desc">
+            <p className="benefits-desc reveal-item">
               PlastiData aide vos équipes à voir plus clair, agir plus vite et prendre de meilleures décisions au quotidien.
             </p>
           </div>
           
           <div className="benefit-list">
             {benefitItems.map((item, index) => (
-              <div key={index} className="benefit-item">
+              <div key={index} className="benefit-item reveal-item">
                 <strong 
                   className={`benefit-highlight ${item.isDangerHighlight ? 'danger-highlight' : ''}`}
                 >

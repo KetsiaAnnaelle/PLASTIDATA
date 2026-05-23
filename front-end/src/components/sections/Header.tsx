@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
 
 export const Header: React.FC = () => {
@@ -14,21 +15,20 @@ export const Header: React.FC = () => {
   };
 
   const navigationLinks = [
-    { label: 'Méthode', href: '#methode' },
-    { label: 'Dashboards', href: '#dashboards' },
-    { label: 'Offre', href: '#offre' },
-    { label: 'Bénéfices', href: '#benefices' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Méthode', href: '/#methode' },
+    { label: 'Dashboards', href: '/#dashboards' },
+    { label: 'Offre', href: '/#offre' },
+    { label: 'Bénéfices', href: '/#benefices' },
+    { label: 'Contact', href: '/#contact' },
   ];
 
   return (
     <header className="header">
       <div className="container nav-container">
         {/* Brand Logo */}
-        <a href="#" className="logo" aria-label="Accueil PlastiData">
-          <span className="logo-icon">▰</span>
-          <span className="logo-text">PlastiData<span className="logo-accent">.</span></span>
-        </a>
+        <Link to="/" className="logo" aria-label="Accueil PlastiData">
+          <img src="img/logo-plastidata.png" alt="logo" className='w-34 h-34'/>
+        </Link>
 
         {/* Desktop Navigation Links */}
         <nav className="desktop-nav">
@@ -43,9 +43,9 @@ export const Header: React.FC = () => {
           ))}
         </nav>
 
-        {/* Desktop CTA Action */}
+        {/* Desktop CTA Action redirecting to Contact form */}
         <div className="header-actions">
-          <Button href="mailto:contact@plastidata.fr?subject=Demande%20de%20d%C3%A9mo%20PlastiData" variant="primary" className="header-btn">
+          <Button href="/contact" variant="primary" className="header-btn">
             Demander une démo
           </Button>
         </div>
@@ -67,12 +67,12 @@ export const Header: React.FC = () => {
       )}
 
       {/* Mobile Navigation Drawer */}
-      <div className={`mobile-drawer ${mobileMenuOpen ? 'open' : ''}`}>
+      <div className={`mobile-drawer bg-white ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="mobile-drawer-header">
-          <a href="#" className="logo" onClick={closeMobileMenu}>
-            <span className="logo-icon">▰</span>
-            <span className="logo-text">PlastiData</span>
-          </a>
+          <Link to="/" className="logo" onClick={closeMobileMenu}>
+          <img src="img/logo-plastidata.png" alt="logo" className='w-34 h-34'/>
+           
+          </Link>
           <button type="button" className="close-btn" onClick={closeMobileMenu}>
             <X size={26} />
           </button>
@@ -89,7 +89,7 @@ export const Header: React.FC = () => {
             </a>
           ))}
           <Button
-            href="mailto:contact@plastidata.fr?subject=Demande%20de%20d%C3%A9mo%20PlastiData"
+            href="/contact"
             variant="primary"
             className="mobile-cta-btn"
             onClick={closeMobileMenu}

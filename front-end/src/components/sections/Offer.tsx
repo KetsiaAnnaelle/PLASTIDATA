@@ -33,18 +33,18 @@ export const Offer: React.FC = () => {
     >
       <div className="container">
         <div className="text-center-wrapper">
-          <Badge>Une solution complète</Badge>
-          <h2 className="section-title">
+          <Badge className="reveal-item">Une solution complète</Badge>
+          <h2 className="section-title reveal-item">
             Un accompagnement pensé pour les industriels de la plasturgie.
           </h2>
-          <p className="section-intro">
+          <p className="section-intro reveal-item">
             PlastiData combine méthode, visualisation et accompagnement opérationnel pour passer du reporting passif au pilotage utile.
           </p>
         </div>
 
         <div className="offer-grid">
           {offers.map((offer, index) => (
-            <div key={index} className="offer-card">
+            <div key={index} className="offer-card reveal-item">
               <div className="offer-icon">
                 {offer.icon}
               </div>
