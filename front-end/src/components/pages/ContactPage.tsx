@@ -45,186 +45,189 @@ export const ContactPage: React.FC = () => {
       <main className="flex-grow">
         {/* HERO */}
         <section className="contact-hero">
-          <div className="contact-hero-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-          </div>
+             <img src="/img/img-contact.svg" alt="logo" className='contact-hero-icon w-60 h-60'/>
+        
           <h1>Contactez-nous</h1>
           <p>Discutons de votre projet d'amélioration qualité</p>
         </section>
 
         {/* CONTENT */}
         <div className="contact-content">
-          {/* INTRO */}
-          <div className="contact-intro">
-            <h2>Parlons de votre projet</h2>
-            <p>
-              Que vous souhaitiez obtenir le guide, demander une démonstration de nos dashboards, ou discuter d'une intervention sur site, nous sommes là pour vous accompagner.
+          
+          {/* Left Column: Parlons de votre projet content checklist */}
+          <div className="contact-left-col">
+            {/* INTRO */}
+            <div className="contact-intro">
+              <h2>Parlons de votre projet</h2>
+              <p>
+                Que vous souhaitiez obtenir le guide, demander une démonstration de nos dashboards, ou discuter d'une intervention sur site, nous sommes là pour vous accompagner.
+              </p>
+            </div>
+
+            {/* SOUS-TEXTE */}
+            <p className="contact-subtext">
+              Remplissez le formulaire ci-contre et nous vous recontacterons dans les 24&nbsp;heures pour échanger sur vos besoins.
             </p>
-          </div>
 
-          {/* SOUS-TEXTE */}
-          <p style={{ fontSize: '0.92rem', color: '#4b5563', lineHeight: '1.65', marginTop: '-16px' }}>
-            Remplissez le formulaire ci-contre et nous vous recontacterons dans les 24&nbsp;heures pour échanger sur vos besoins.
-          </p>
-
-          {/* EMAIL */}
-          <div className="contact-email-info">
-            <div className="contact-icon-box">
-              <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="M2 7l10 7 10-7" />
-              </svg>
-            </div>
-            <div>
-              <div className="label">Email</div>
-              <div className="value">
-                <a href="mailto:contact@plastidata.fr" style={{ color: 'inherit', fontWeight: 'bold', textDecoration: 'none' }} className="hover:underline">
-                  contact@plastidata.fr
-                </a>
+            {/* EMAIL */}
+            <div className="contact-email-info">
+              <div className="contact-icon-box">
+                <svg viewBox="0 0 24 24">
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <path d="M2 7l10 7 10-7" />
+                </svg>
+              </div>
+              <div>
+                <div className="label">Email</div>
+                <div className="value">
+                  <a href="mailto:contact@plastidata.fr" style={{ color: 'inherit', fontWeight: 'bold', textDecoration: 'none' }} className="hover:underline">
+                    contact@plastidata.fr
+                  </a>
+                </div>
               </div>
             </div>
+
+            {/* FEATURES */}
+            <div className="contact-features-card">
+              <h3>Ce que nous pouvons faire pour vous</h3>
+              <ul>
+                <li>
+                  <div className="contact-bullet"></div>
+                  <span>Vous envoyer le guide PlastiData</span>
+                </li>
+                <li>
+                  <div className="contact-bullet"></div>
+                  <span>Organiser une démonstration de nos dashboards</span>
+                </li>
+                <li>
+                  <div className="contact-bullet"></div>
+                  <span>Discuter d'une intervention ou conférence</span>
+                </li>
+                <li>
+                  <div className="contact-bullet"></div>
+                  <span>Répondre à vos questions sur la méthode</span>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          {/* FEATURES */}
-          <div className="contact-features-card">
-            <h3>Ce que nous pouvons faire pour vous</h3>
-            <ul>
-              <li>
-                <div className="contact-bullet"></div>
-                <span>Vous envoyer le guide PlastiData</span>
-              </li>
-              <li>
-                <div className="contact-bullet"></div>
-                <span>Organiser une démonstration de nos dashboards</span>
-              </li>
-              <li>
-                <div className="contact-bullet"></div>
-                <span>Discuter d'une intervention ou conférence</span>
-              </li>
-              <li>
-                <div className="contact-bullet"></div>
-                <span>Répondre à vos questions sur la méthode</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* FORM */}
-          <div className="contact-form-card">
-            {submitted ? (
-              <div className="contact-success-msg" id="successMsg">
-                <div className="check">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
+          {/* Right Column: Form Card */}
+          <div className="contact-right-col">
+            <div className="contact-form-card">
+              {submitted ? (
+                <div className="contact-success-msg" id="successMsg">
+                  <div className="check">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                  </div>
+                  <h3>Message envoyé !</h3>
+                  <p>Nous vous répondrons dans les 24 heures.</p>
+                  <button
+                    type="button"
+                    className="contact-btn-send"
+                    style={{ marginTop: '24px' }}
+                    onClick={() => setSubmitted(false)}
+                  >
+                    Envoyer un autre message
+                  </button>
                 </div>
-                <h3>Message envoyé !</h3>
-                <p>Nous vous répondrons dans les 24 heures.</p>
-                <button
-                  type="button"
-                  className="contact-btn-send"
-                  style={{ marginTop: '24px' }}
-                  onClick={() => setSubmitted(false)}
-                >
-                  Envoyer un autre message
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={formik.handleSubmit} id="formContent">
-                <h2>Envoyez-nous un message</h2>
+              ) : (
+                <form onSubmit={formik.handleSubmit} id="formContent">
+                  <h2>Envoyez-nous un message</h2>
 
-                {/* Name Field */}
-                <div className="contact-field">
-                  <label htmlFor="name">Nom et prénom</label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="Votre nom complet"
-                    className={formik.touched.name && formik.errors.name ? 'error' : ''}
-                    value={formik.values.name}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                  {formik.touched.name && formik.errors.name && (
-                    <div style={{ color: '#dc2626', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '6px' }}>
-                      {formik.errors.name}
-                    </div>
-                  )}
-                </div>
-
-                {/* Company Field */}
-                <div className="contact-field">
-                  <label htmlFor="company">Entreprise</label>
-                  <input
-                    type="text"
-                    id="company"
-                    name="company"
-                    placeholder="Nom de votre entreprise"
-                    className={formik.touched.company && formik.errors.company ? 'error' : ''}
-                    value={formik.values.company}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                  {formik.touched.company && formik.errors.company && (
-                    <div style={{ color: '#dc2626', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '6px' }}>
-                      {formik.errors.company}
-                    </div>
-                  )}
-                </div>
-
-                {/* Need Select Field */}
-                <div className="contact-field">
-                  <label htmlFor="need">Besoin</label>
-                  <div className="contact-select-wrap">
-                    <select
-                      id="need"
-                      name="need"
-                      className={`${formik.values.need ? 'filled' : ''} ${formik.touched.need && formik.errors.need ? 'error' : ''}`}
-                      value={formik.values.need}
+                  {/* Name Field */}
+                  <div className="contact-field">
+                    <label htmlFor="name">Nom et prénom</label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      placeholder="Votre nom complet"
+                      className={formik.touched.name && formik.errors.name ? 'error' : ''}
+                      value={formik.values.name}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                    >
-                      <option value="" disabled>Sélectionnez votre besoin</option>
-                      <option value="guide">Obtenir le guide</option>
-                      <option value="demo">Demander une démonstration</option>
-                      <option value="conference">Intervention / Conférence</option>
-                      <option value="other">Autre demande</option>
-                    </select>
+                    />
+                    {formik.touched.name && formik.errors.name && (
+                      <div style={{ color: '#dc2626', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '6px' }}>
+                        {formik.errors.name}
+                      </div>
+                    )}
                   </div>
-                  {formik.touched.need && formik.errors.need && (
-                    <div style={{ color: '#dc2626', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '6px' }}>
-                      {formik.errors.need}
-                    </div>
-                  )}
-                </div>
 
-                {/* Message Field */}
-                <div className="contact-field">
-                  <label htmlFor="message">Message</label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    placeholder="Décrivez votre besoin ou votre projet…"
-                    className={formik.touched.message && formik.errors.message ? 'error' : ''}
-                    value={formik.values.message}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                  {formik.touched.message && formik.errors.message && (
-                    <div style={{ color: '#dc2626', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '6px' }}>
-                      {formik.errors.message}
-                    </div>
-                  )}
-                </div>
+                  {/* Company Field */}
+                  <div className="contact-field">
+                    <label htmlFor="company">Entreprise</label>
+                    <input
+                      type="text"
+                      id="company"
+                      name="company"
+                      placeholder="Nom de votre entreprise"
+                      className={formik.touched.company && formik.errors.company ? 'error' : ''}
+                      value={formik.values.company}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                    {formik.touched.company && formik.errors.company && (
+                      <div style={{ color: '#dc2626', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '6px' }}>
+                        {formik.errors.company}
+                      </div>
+                    )}
+                  </div>
 
-                {/* Submit button */}
-                <button type="submit" className="contact-btn-send">
-                  Envoyer le message
-                </button>
-              </form>
-            )}
+                  {/* Need Select Field */}
+                  <div className="contact-field">
+                    <label htmlFor="need">Besoin</label>
+                    <div className="contact-select-wrap">
+                      <select
+                        id="need"
+                        name="need"
+                        className={`${formik.values.need ? 'filled' : ''} ${formik.touched.need && formik.errors.need ? 'error' : ''}`}
+                        value={formik.values.need}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      >
+                        <option value="" disabled>Sélectionnez votre besoin</option>
+                        <option value="guide">Obtenir le guide</option>
+                        <option value="demo">Demander une démonstration</option>
+                        <option value="conference">Intervention / Conférence</option>
+                        <option value="other">Autre demande</option>
+                      </select>
+                    </div>
+                    {formik.touched.need && formik.errors.need && (
+                      <div style={{ color: '#dc2626', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '6px' }}>
+                        {formik.errors.need}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Message Field */}
+                  <div className="contact-field">
+                    <label htmlFor="message">Message</label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      placeholder="Décrivez votre besoin ou votre projet…"
+                      className={formik.touched.message && formik.errors.message ? 'error' : ''}
+                      value={formik.values.message}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                    {formik.touched.message && formik.errors.message && (
+                      <div style={{ color: '#dc2626', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '6px' }}>
+                        {formik.errors.message}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Submit button */}
+                  <button type="submit" className="contact-btn-send">
+                    Envoyer le message
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
         </div>
       </main>

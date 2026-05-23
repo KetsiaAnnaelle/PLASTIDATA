@@ -27,7 +27,7 @@ export const Header: React.FC = () => {
       <div className="container nav-container">
         {/* Brand Logo */}
         <Link to="/" className="logo" aria-label="Accueil PlastiData">
-          <img src="img/logo-plastidata.png" alt="logo" className='w-34 h-34'/>
+          <img src="/img/logo-plastidata.png" alt="logo" className='w-34 h-34'/>
         </Link>
 
         {/* Desktop Navigation Links */}
@@ -43,22 +43,30 @@ export const Header: React.FC = () => {
           ))}
         </nav>
 
-        {/* Desktop CTA Action redirecting to Contact form */}
+        {/* Desktop CTA Actions */}
         <div className="header-actions">
+          <Link to="/login" className="nav-link" style={{ marginRight: '24px', fontWeight: 'bold' }}>
+            Connexion
+          </Link>
           <Button href="/contact" variant="primary" className="header-btn">
             Demander une démo
           </Button>
         </div>
 
-        {/* Mobile Hamburger Toggle */}
-        <button
-          type="button"
-          className="mobile-toggle"
-          onClick={toggleMobileMenu}
-          aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-        >
-          {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
-        </button>
+        {/* Mobile controls: CTA button and Hamburger Toggle side-by-side */}
+        <div className="mobile-navbar-controls">
+          <Button href="/contact" variant="primary" className="header-btn-mobile">
+            Démo
+          </Button>
+          <button
+            type="button"
+            className="mobile-toggle"
+            onClick={toggleMobileMenu}
+            aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+          >
+            {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation Drawer Overlay */}
@@ -70,8 +78,7 @@ export const Header: React.FC = () => {
       <div className={`mobile-drawer bg-white ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="mobile-drawer-header">
           <Link to="/" className="logo" onClick={closeMobileMenu}>
-          <img src="img/logo-plastidata.png" alt="logo" className='w-34 h-34'/>
-           
+            <img src="/img/logo-plastidata.png" alt="logo" className='w-34 h-34'/>
           </Link>
           <button type="button" className="close-btn" onClick={closeMobileMenu}>
             <X size={26} />
@@ -88,6 +95,14 @@ export const Header: React.FC = () => {
               {link.label}
             </a>
           ))}
+          <Link
+            to="/login"
+            className="mobile-nav-link font-bold"
+            onClick={closeMobileMenu}
+            style={{ color: 'var(--danger)', borderBottom: '1px solid var(--border-color)' }}
+          >
+            Connexion
+          </Link>
           <Button
             href="/contact"
             variant="primary"

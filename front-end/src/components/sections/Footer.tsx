@@ -11,8 +11,7 @@ export const Footer: React.FC = () => {
         {/* Column 1: Brand Info */}
         <div className="footer-col brand-col">
           <Link to="/" className="logo footer-logo" aria-label="Accueil PlastiData">
-            <span className="logo-icon">▰</span>
-            <span className="logo-text">PlastiData<span className="logo-accent">.</span></span>
+            <img src="/img/logo-plastidata.png" alt="logo" className=' w-34 h-34'/>
           </Link>
           <p className="footer-brand-text">
             La data au cœur de la plasturgie. Nous aidons les industriels de la production à structurer leurs données qualité et process pour passer du mode urgence au pilotage terrain pérenne.
