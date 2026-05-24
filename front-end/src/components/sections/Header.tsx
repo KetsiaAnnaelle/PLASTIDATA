@@ -123,9 +123,7 @@ export const Header: React.FC = () => {
               Connexion
             </Link>
           )}
-          <Button href="/contact" variant="primary" className="header-btn">
-            Demander une démo
-          </Button>
+         
         </div>
 
         {/* Mobile controls: CTA button and Hamburger Toggle side-by-side */}
