@@ -27,7 +27,7 @@ export const Header: React.FC = () => {
 
     try {
       // Get the current token from useAuthStore
-      const token = useAuthStore.getState().token;
+      const token = useAuthStore.getState().accessToken;
       
       await axios.delete('http://localhost:8000/api/user/delete/', {
         headers: {
