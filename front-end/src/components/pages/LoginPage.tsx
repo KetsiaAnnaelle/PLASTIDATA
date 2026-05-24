@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { Header } from '../sections/Header';
 import { Footer } from '../sections/Footer';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,10 +28,37 @@ export const LoginPage: React.FC = () => {
       password: '',
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values, { setSubmitting }) => {
       console.log('Login credentials:', values);
-      setLoginSuccess(true);
-      setTimeout(() => setLoginSuccess(false), 4000);
+      try {
+        const response = await axios.post('http://localhost:8000/api/token/', {
+          username: values.email, // DRF standard uses username (or email custom backend)
+          password: values.password,
+        });
+        
+        const { access, refresh, user } = response.data;
+        
+        // Log in via Zustand store
+        useAuthStore.getState().login(
+          {
+            name: user?.name || '',
+            company: user?.company || '',
+            email: user?.email || values.email,
+          },
+          access,
+          refresh
+        );
+        
+        setLoginSuccess(true);
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1500);
+      } catch (error: any) {
+        console.error('Login error:', error);
+        alert(error.response?.data?.detail || 'Identifiants invalides ou erreur serveur.');
+      } finally {
+        setSubmitting(false);
+      }
     },
   });
 

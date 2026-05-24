@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { User, Building2, Mail, Lock, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import { Header } from '../sections/Header';
@@ -41,10 +42,22 @@ export const RegisterPage: React.FC = () => {
       terms: false,
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values, { setSubmitting }) => {
       console.log('Account registered:', values);
-      setRegisterSuccess(true);
-      setTimeout(() => setRegisterSuccess(false), 5000);
+      try {
+        await axios.post('http://localhost:8000/api/register/', {
+          name: values.name,
+          company: values.company,
+          email: values.email,
+          password: values.password,
+        });
+        setRegisterSuccess(true);
+      } catch (error: any) {
+        console.error('Registration error:', error);
+        alert(error.response?.data?.email?.[0] || error.response?.data?.detail || 'Une erreur est survenue lors de l\'inscription.');
+      } finally {
+        setSubmitting(false);
+      }
     },
   });
 
@@ -69,12 +82,17 @@ export const RegisterPage: React.FC = () => {
             {registerSuccess ? (
               <div className="auth-success-box animate-fade-in">
                 <div className="auth-success-icon">
-                  <CheckCircle size={44} />
+                  <CheckCircle size={44} style={{ color: '#27ae60' }} />
                 </div>
                 <h3 className="auth-success-title">Inscription complétée !</h3>
                 <p className="auth-success-desc">
-                  Un email de confirmation vous a été envoyé. Veuillez activer votre compte pour accéder aux dashboards.
+                  Votre compte a été créé avec succès. <strong>Nous venons de vous envoyer votre eBook gratuit par email</strong> ! Vérifiez votre boîte de réception (et vos spams).
                 </p>
+                <div style={{ marginTop: '20px' }}>
+                  <Link to="/login" className="auth-btn-submit" style={{ textDecoration: 'none' }}>
+                    Se connecter
+                  </Link>
+                </div>
               </div>
             ) : (
               <form onSubmit={formik.handleSubmit} className="flex flex-col gap-1">

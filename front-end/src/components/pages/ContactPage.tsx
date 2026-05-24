@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { Header } from '../sections/Header';
 import { Footer } from '../sections/Footer';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export const ContactPage: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
+  const { isAuthenticated } = useAuthStore();
 
   // Form validation schema matching the premium design requirements
   const validationSchema = Yup.object({
@@ -16,6 +20,17 @@ export const ContactPage: React.FC = () => {
       .required('Nom de votre entreprise requis'),
     need: Yup.string()
       .required('Veuillez sélectionner votre besoin'),
+    selectedDashboards: Yup.array().of(Yup.string()).test(
+      'demo-dashboards-required',
+      'Veuillez sélectionner au moins un tableau de bord',
+      function (value) {
+        const { need } = this.parent;
+        if (need === 'demo') {
+          return Array.isArray(value) && value.length > 0;
+        }
+        return true;
+      }
+    ),
     message: Yup.string()
       .min(10, 'Le message doit faire au moins 10 caractères')
       .required('Le message ne peut pas être vide'),
@@ -27,13 +42,28 @@ export const ContactPage: React.FC = () => {
       name: '',
       company: '',
       need: '',
+      selectedDashboards: [] as string[],
       message: '',
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values, { setSubmitting }) => {
       console.log('Contact form submitted with values:', values);
-      setSubmitted(true);
-      formik.resetForm();
+      try {
+        await axios.post('http://localhost:8000/api/contact/', {
+          name: values.name,
+          company: values.company,
+          need: values.need,
+          selected_dashboards: values.need === 'demo' ? values.selectedDashboards : [],
+          message: values.message,
+        });
+        setSubmitted(true);
+        formik.resetForm();
+      } catch (error) {
+        console.error('Error submitting contact form:', error);
+        alert('Une erreur est survenue lors de l\'envoi du message. Veuillez réessayer.');
+      } finally {
+        setSubmitting(false);
+      }
     },
   });
 
@@ -185,7 +215,13 @@ export const ContactPage: React.FC = () => {
                         name="need"
                         className={`${formik.values.need ? 'filled' : ''} ${formik.touched.need && formik.errors.need ? 'error' : ''}`}
                         value={formik.values.need}
-                        onChange={formik.handleChange}
+                        onChange={(e) => {
+                          formik.handleChange(e);
+                          // Clear dashboards if the user changes the need from demo to something else
+                          if (e.target.value !== 'demo') {
+                            formik.setFieldValue('selectedDashboards', []);
+                          }
+                        }}
                         onBlur={formik.handleBlur}
                       >
                         <option value="" disabled>Sélectionnez votre besoin</option>
@@ -201,6 +237,70 @@ export const ContactPage: React.FC = () => {
                       </div>
                     )}
                   </div>
+
+                  {/* Dashboard Select Checklist or Auth Guard (only when Demander une démo is chosen) */}
+                  {formik.values.need === 'demo' && (
+                    isAuthenticated ? (
+                      <div className="contact-field animate-fade-in" style={{ animationDuration: '0.3s' }}>
+                        <label>Tableaux de bord à découvrir (sélectionnez-en au moins un)</label>
+                        <div className="dashboards-selection-grid">
+                          {[
+                            { id: 'qualite', title: 'Dashboard Qualité', desc: 'Maîtrisez PPM, rebuts & Pareto' },
+                            { id: 'process', title: 'Dashboard Process', desc: 'TRS, CP/CPK, cycles machine' },
+                            { id: 'donnees', title: 'Dashboard Données', desc: 'Complétude & anomalies sources' },
+                            { id: 'organisation', title: 'Dashboard Organisation', desc: 'Retards, actions, récidives' },
+                          ].map((db) => {
+                            const isChecked = formik.values.selectedDashboards.includes(db.id);
+                            return (
+                              <div
+                                key={db.id}
+                                className={`dashboard-select-card ${isChecked ? 'active' : ''}`}
+                                onClick={() => {
+                                  const current = [...formik.values.selectedDashboards];
+                                  if (isChecked) {
+                                    formik.setFieldValue(
+                                      'selectedDashboards',
+                                      current.filter((id) => id !== db.id)
+                                    );
+                                  } else {
+                                    formik.setFieldValue('selectedDashboards', [...current, db.id]);
+                                  }
+                                }}
+                              >
+                                <div className="card-checkbox">
+                                  {isChecked && <div className="card-checkbox-checked" />}
+                                </div>
+                                <div className="card-info">
+                                  <span className="card-title">{db.title}</span>
+                                  <span className="card-desc">{db.desc}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {formik.touched.selectedDashboards && formik.errors.selectedDashboards && (
+                          <div style={{ color: '#dc2626', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '6px' }}>
+                            {formik.errors.selectedDashboards}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="unauthorized-demo-box animate-fade-in">
+                        <h3 className="unauthorized-demo-title">Connexion requise</h3>
+                        <p className="unauthorized-demo-desc">
+                          Pour demander une démonstration et explorer nos tableaux de bord opérationnels, vous devez posséder un compte et être connecté.
+                        </p>
+                        <div className="unauthorized-demo-actions">
+                          <Link to="/login" className="unauthorized-btn-login">
+                            Se connecter
+                          </Link>
+                          <Link to="/register" className="unauthorized-btn-register">
+                            Créer un compte
+                          </Link>
+                        </div>
+                      </div>
+                    )
+                  )}
 
                   {/* Message Field */}
                   <div className="contact-field">
@@ -221,10 +321,20 @@ export const ContactPage: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Submit button */}
-                  <button type="submit" className="contact-btn-send">
-                    Envoyer le message
-                  </button>
+                  {/* Submit button or redirect action */}
+                  {formik.values.need === 'demo' && !isAuthenticated ? (
+                    <Link
+                      to="/login"
+                      className="contact-btn-send"
+                      style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      Se connecter pour continuer
+                    </Link>
+                  ) : (
+                    <button type="submit" className="contact-btn-send">
+                      Envoyer le message
+                    </button>
+                  )}
                 </form>
               )}
             </div>
