@@ -4,7 +4,8 @@ from .views import (
     ContactMessageCreateView,
     UserRegisterView,
     MyTokenObtainPairView,
-    UserDeleteView
+    UserDeleteView,
+    PlastiPilotChatView
 )
 
 urlpatterns = [
@@ -13,4 +14,5 @@ urlpatterns = [
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('user/delete/', UserDeleteView.as_view(), name='user_delete'),
+    path('chat/', PlastiPilotChatView.as_view(), name='plastipilot_chat'),
 ]

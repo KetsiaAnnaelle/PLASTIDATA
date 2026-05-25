@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { useAuthStore } from '../../store/useAuthStore';
 import axios from 'axios';
+import { API_URL } from '../../config';
+
 
 export const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -29,7 +31,7 @@ export const Header: React.FC = () => {
       // Get the current token from useAuthStore
       const token = useAuthStore.getState().accessToken;
       
-      await axios.delete('http://localhost:8000/api/user/delete/', {
+      await axios.delete(`${API_URL}/user/delete/`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -218,14 +220,14 @@ export const Header: React.FC = () => {
               </Link>
             )}
 
-            <Button
+            {/* <Button
               href="/contact"
               variant="primary"
               className="mobile-cta-btn"
               onClick={closeMobileMenu}
             >
               Demander une démo
-            </Button>
+            </Button> */}
           </nav>
         </div>
       </div>

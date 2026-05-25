@@ -16,6 +16,9 @@ import { ContactPage } from './components/pages/ContactPage';
 import { LoginPage } from './components/pages/LoginPage';
 import { RegisterPage } from './components/pages/RegisterPage';
 
+// Floating AI assistant agent component
+import { PlastiPilotAgent } from './components/ui/PlastiPilotAgent';
+
 import './App.css';
 
 // Premium Scroll-to-Top recovery helper on route modifications
@@ -88,6 +91,9 @@ const App: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Routes>
+
+      {/* PlastiPilot Floating AI Assistant Agent */}
+      <PlastiPilotAgent />
     </BrowserRouter>
   );
 };

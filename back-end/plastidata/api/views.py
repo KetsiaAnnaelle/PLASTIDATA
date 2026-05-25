@@ -245,3 +245,156 @@ class UserDeleteView(generics.DestroyAPIView):
             status=status.HTTP_200_OK
         )
 
+
+import urllib.request
+import urllib.error
+import json
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+class PlastiPilotChatView(APIView):
+    permission_classes = []
+    authentication_classes = []
+
+    def post(self, request, *args, **kwargs):
+        user_message = request.data.get('message', '').strip()
+        history = request.data.get('history', [])
+
+        if not user_message:
+            return Response({"error": "Message cannot be empty."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 1. Look for Anthropic API Key in environment
+        api_key = os.environ.get('ANTHROPIC_API_KEY') or getattr(settings, 'ANTHROPIC_API_KEY', None)
+
+        if api_key:
+            try:
+                # Format history for Anthropic API
+                messages = []
+                for h in history:
+                    messages.append({
+                        "role": "user" if h.get('role') == 'user' else "assistant",
+                        "content": h.get('text', '')
+                    })
+                messages.append({"role": "user", "content": user_message})
+
+                # Call Anthropic API using standard urllib
+                headers = {
+                    'x-api-key': api_key,
+                    'anthropic-version': '2023-06-01',
+                    'content-type': 'application/json'
+                }
+                payload = {
+                    "model": "claude-3-5-sonnet-20241022",
+                    "max_tokens": 1000,
+                    "system": "Tu es PlastiPilot, l'assistant IA officiel de PlastiData. Tu accompagnes les professionnels de la plasturgie dans leur pilotage industriel. Tu ne parles jamais de tarifs. Tu renvoies toujours vers PlastiData pour plus d'infos.",
+                    "messages": messages
+                }
+                
+                req = urllib.request.Request(
+                    'https://api.anthropic.com/v1/messages',
+                    data=json.dumps(payload).encode('utf-8'),
+                    headers=headers,
+                    method='POST'
+                )
+                with urllib.request.urlopen(req, timeout=10) as response:
+                    res_data = json.loads(response.read().decode('utf-8'))
+                    reply = res_data.get('content', [{}])[0].get('text', 'Je ne parviens pas à générer une réponse.')
+                    return Response({"reply": reply})
+            except Exception as e:
+                print(f"Error calling Claude: {e}")
+
+        # 2. Smart local rule-based assistant fallback
+        lower_msg = user_message.lower()
+        reply = ""
+
+        if "ppm" in lower_msg or "rebut" in lower_msg or "qualité" in lower_msg:
+            reply = (
+                "Avant de conclure sur un taux de rebut ou un PPM en hausse, stratifiez votre analyse. "
+                "Ouvrez votre Pareto de défauts, filtrez par machine ou par équipe, et comparez avant/après la hausse. "
+                "Si un défaut ou une machine représente plus de 50% de la dérive, concentrez vos actions d'amélioration uniquement sur ce point.\n\n"
+                "Le **Dashboard Qualité PlastiData** automatise cette stratification en temps réel pour vous permettre de cibler vos chantiers Kaizen en un clic."
+            )
+        elif "trs" in lower_msg or "cadence" in lower_msg or "performance" in lower_msg:
+            reply = (
+                "Un TRS (Taux de Rendement Synthétique) bas ne dit pas où agir. Décomposez-le en ses 3 composantes fondamentales : "
+                "la Disponibilité (arrêts subis), la Performance (sous-cadences et micro-arrêts) et la Qualité (rebuts).\n\n"
+                "Le **Dashboard Process PlastiData** calcule automatiquement votre TRS décomposé presse par presse pour identifier en 10 secondes le maillon faible de votre production."
+            )
+        elif "cpk" in lower_msg or "cp " in lower_msg or "capabilité" in lower_msg:
+            reply = (
+                "Un Cpk inférieur à 1,33 signifie que votre procédé n'est pas capable sur la cote mesurée. "
+                "Si votre Cp est bon mais que le Cpk est bas, il s'agit d'un problème de centrage (réglage machine). "
+                "Si les deux sont bas, c'est que la variabilité globale est trop forte (usure outillage, instabilité matière).\n\n"
+                "Le **Dashboard Process PlastiData** trace automatiquement vos Cp/Cpk à chaque actualisation."
+            )
+        elif "vide" in lower_msg or "aucun indicateur" in lower_msg:
+            reply = (
+                "Trois causes possibles si votre dashboard est vide après actualisation :\n"
+                "1. Le chemin d'accès vers votre fichier source Excel est erroné (pensez au double antislash final).\n"
+                "2. Les en-têtes de colonnes ont été renommés dans votre fichier source Excel.\n"
+                "3. Un filtre temporel ou machine trop restrictif est actif en haut du rapport.\n\n"
+                "N'hésitez pas à vérifier ces points techniques ou à demander notre guide illustré."
+            )
+        elif "chemin" in lower_msg or "accès" in lower_msg or "source" in lower_msg:
+            reply = (
+                "Pour connecter le dashboard à votre fichier source, le paramètre de chemin d'accès dans Power BI doit être le chemin absolu se terminant par un double antislash `\\\\`.\n"
+                "Exemple : `C:\\\\Plastidata\\\\Production_Source.xlsx`.\n\n"
+                "Cette configuration simple prend moins de 5 minutes avec notre guide de démarrage inclus."
+            )
+        elif "action" in lower_msg or "retard" in lower_msg or "clôture" in lower_msg:
+            reply = (
+                "Face à beaucoup d'actions ouvertes, filtrez d'abord par retard et par responsable. "
+                "Priorisez systématiquement les actions liées à des récidives, car elles signalent une cause racine mal résolue. "
+                "Un objectif sain est un taux de clôture des actions à 30 jours supérieur à 80%.\n\n"
+                "Le **Dashboard Organisation PlastiData** surveille automatiquement les retards dès le lendemain de l'échéance."
+            )
+        elif "incomplet" in lower_msg or "complétude" in lower_msg:
+            reply = (
+                "Une complétude des données inférieure à 95% fausse tous vos rapports industriels et peut conduire à de mauvaises décisions terrain. "
+                "Identifiez immédiatement la source au score le plus bas et impliquez le responsable de saisie.\n\n"
+                "Le **Dashboard Données PlastiData** calcule automatiquement un score de complétude pour chaque table source."
+            )
+        elif "récidive" in lower_msg:
+            reply = (
+                "Une récidive de défaut signifie que votre action corrective précédente a été inefficace car la cause racine n'a pas été éliminée. "
+                "Réunissez l'équipe et réalisez un atelier structuré (5 Pourquoi / Ishikawa) pour remonter à la source réelle du problème."
+            )
+        elif "qu'est-ce que" in lower_msg or "c'est quoi" in lower_msg or "plastidata" in lower_msg:
+            reply = (
+                "**PlastiData** est une solution complète de pilotage industriel spécialement conçue pour la plasturgie. "
+                "Elle combine une méthode d'amélioration continue terrain issue de notre livre blanc et 4 dashboards Power BI complémentaires clés en main :\n"
+                "1. **Qualité** (PPM, Pareto, non-conformités)\n"
+                "2. **Process** (TRS, Capabilité Cp/Cpk, Temps de cycle)\n"
+                "3. **Données** (Score de complétude, Doublons, Fiabilité)\n"
+                "4. **Organisation** (Taux de clôture, Suivi des retards d'actions)\n\n"
+                "Notre objectif est de vous faire gagner 3h de reporting Excel par semaine pour vous concentrer sur l'action terrain."
+            )
+        elif "prix" in lower_msg or "tarif" in lower_msg or "combien" in lower_msg:
+            reply = (
+                "Pour obtenir un devis adapté à la taille de votre usine et à vos parcs de presses, je vous invite à nous contacter directement. "
+                "Ce que je peux vous assurer : nos clients constatent un retour sur investissement immédiat dès le premier mois, le temps de saisie manuelle économisé couvrant largement la licence."
+            )
+        elif "démarrer" in lower_msg or "temps" in lower_msg or "installation" in lower_msg:
+            reply = (
+                "Nos 4 dashboards sont livrés clés en main. La connexion à vos données Excel, ERP ou bases SQL prend moins de 5 minutes grâce à notre guide illustré. "
+                "La plupart de nos clients commencent à piloter leur production dès le lendemain de la commande."
+            )
+        elif "compatible" in lower_msg or "erp" in lower_msg or "système" in lower_msg:
+            reply = (
+                "Les dashboards PlastiData sont compatibles avec Excel, CSV, SQL Server, et tous les ERP industriels permettant un export de données (SAP, Sage, Sylob, Clipper, Helios, etc.)."
+            )
+        else:
+            reply = (
+                "Bonjour ! Je suis **PlastiPilot**, l'assistant IA de PlastiData.\n\n"
+                "Je vous conseille d'analyser vos processus en profondeur. Dans la plasturgie, nous cherchons toujours à structurer et fiabiliser la donnée avant d'agir.\n"
+                "Dites-moi si vous rencontrez en ce moment un problème de **PPM en hausse**, de **TRS bas**, de **Cpk insuffisant** ou de **suivi de vos plans d'actions** !"
+            )
+
+        # Append standard CTA to answers if not general greeting
+        if any(kw in lower_msg for kw in ["ppm", "trs", "cpk", "action", "devis", "prix", "plastidata", "solution"]):
+            reply += "\n\n[Demander un devis personnalisé](https://linkedin.com/company/plastidata) — Deborah vous répond sous 24h."
+
+        return Response({"reply": reply})
+
+

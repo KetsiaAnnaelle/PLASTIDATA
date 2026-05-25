@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { API_URL } from '../../config';
+
 import { Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { Header } from '../sections/Header';
@@ -31,7 +33,7 @@ export const LoginPage: React.FC = () => {
     onSubmit: async (values, { setSubmitting }) => {
       console.log('Login credentials:', values);
       try {
-        const response = await axios.post('http://localhost:8000/api/token/', {
+        const response = await axios.post(`${API_URL}/token/`, {
           username: values.email, // DRF standard uses username (or email custom backend)
           password: values.password,
         });

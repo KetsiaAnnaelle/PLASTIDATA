@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { API_URL } from '../../config';
+
 import { Link } from 'react-router-dom';
 import { Header } from '../sections/Header';
 import { Footer } from '../sections/Footer';
@@ -49,7 +51,7 @@ export const ContactPage: React.FC = () => {
     onSubmit: async (values, { setSubmitting }) => {
       console.log('Contact form submitted with values:', values);
       try {
-        await axios.post('http://localhost:8000/api/contact/', {
+        await axios.post(`${API_URL}/contact/`, {
           name: values.name,
           company: values.company,
           need: values.need,

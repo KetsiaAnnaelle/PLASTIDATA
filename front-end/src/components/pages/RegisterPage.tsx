@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { API_URL } from '../../config';
+
 import { Link } from 'react-router-dom';
 import { User, Building2, Mail, Lock, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import { Header } from '../sections/Header';
@@ -45,7 +47,7 @@ export const RegisterPage: React.FC = () => {
     onSubmit: async (values, { setSubmitting }) => {
       console.log('Account registered:', values);
       try {
-        await axios.post('http://localhost:8000/api/register/', {
+        await axios.post(`${API_URL}/register/`, {
           name: values.name,
           company: values.company,
           email: values.email,

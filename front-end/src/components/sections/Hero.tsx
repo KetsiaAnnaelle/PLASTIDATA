@@ -51,17 +51,25 @@ export const Hero: React.FC = () => {
 
         {/* Right Side: Real Dashboard Screenshot */}
         <div className="hero-visual reveal-item">
-          <div className="dashboard-frame" style={{ padding: '0', overflow: 'hidden' }}>
-            <img 
-              src="/img/HeroDash.jpeg" 
-              alt="Dashboard PlastiData Vue d'ensemble" 
-              style={{
-                width: '100%',
-                height: 'auto',
-                display: 'block',
-                borderRadius: 'inherit',
-              }}
-            />
+          <div className="dashboard-browser-mockup">
+            <div className="browser-header">
+              <div className="browser-dots">
+                <span className="dot dot-close"></span>
+                <span className="dot dot-minimize"></span>
+                <span className="dot dot-maximize"></span>
+              </div>
+              <div className="browser-address">
+                <span className="address-lock">🔒</span>
+                <span className="address-text">app.plastidata.fr/dashboard</span>
+              </div>
+            </div>
+            <div className="browser-body">
+              <img 
+                src="/img/HeroDash.jpeg" 
+                alt="Tableau de bord industriel PlastiData" 
+                className="dashboard-image"
+              />
+            </div>
           </div>
         </div>
       </div>
