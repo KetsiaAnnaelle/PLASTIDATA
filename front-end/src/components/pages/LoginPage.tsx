@@ -1,20 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import { API_URL } from '../../config';
-
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { Header } from '../sections/Header';
 import { Footer } from '../sections/Footer';
 import { useAuthStore } from '../../store/useAuthStore';
+import { API_URL } from '../../config';
 
 export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const { isAuthenticated } = useAuthStore();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/';
 
-  // Form validation schema with Yup
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+
   const validationSchema = Yup.object({
     email: Yup.string()
       .email('Veuillez saisir une adresse email valide')
@@ -31,16 +39,14 @@ export const LoginPage: React.FC = () => {
     },
     validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
-      console.log('Login credentials:', values);
       try {
         const response = await axios.post(`${API_URL}/token/`, {
-          username: values.email, // DRF standard uses username (or email custom backend)
+          username: values.email,
           password: values.password,
         });
         
         const { access, refresh, user } = response.data;
         
-        // Log in via Zustand store
         useAuthStore.getState().login(
           {
             name: user?.name || '',
@@ -53,7 +59,7 @@ export const LoginPage: React.FC = () => {
         
         setLoginSuccess(true);
         setTimeout(() => {
-          window.location.href = '/';
+          window.location.href = redirectTo;
         }, 1500);
       } catch (error: any) {
         console.error('Login error:', error);
@@ -66,7 +72,6 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="auth-page-wrapper">
-      {/* Background ambient lighting glows */}
       <div className="auth-glow-1" />
       <div className="auth-glow-2" />
 
@@ -75,7 +80,6 @@ export const LoginPage: React.FC = () => {
       <main className="flex-grow flex items-center justify-center py-16 px-4">
         <div className="auth-container">
           <div className="auth-card animate-slide-up">
-            {/* Header info with official logo */}
             <div className="auth-header">
               <img src="/img/logo-plastidata.png" alt="PlastiData Logo" className="auth-logo" />
               <h1>Connexion</h1>
@@ -94,7 +98,6 @@ export const LoginPage: React.FC = () => {
               </div>
             ) : (
               <form onSubmit={formik.handleSubmit} className="flex flex-col gap-1">
-                {/* Email Field */}
                 <div className="auth-form-group">
                   <label htmlFor="email" className="auth-label">
                     Adresse email
@@ -123,7 +126,6 @@ export const LoginPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Password Field */}
                 <div className="auth-form-group">
                   <div className="flex justify-between items-center">
                     <label htmlFor="password" className="auth-label">
@@ -164,15 +166,10 @@ export const LoginPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Submit Action using Brand Red Button */}
-                <button
-                  type="submit"
-                  className="auth-btn-submit"
-                >
+                <button type="submit" className="auth-btn-submit">
                   Se connecter
                 </button>
 
-                {/* Footer redirection to Register */}
                 <div className="auth-footer">
                   <p>
                     Pas encore de compte ?{' '}

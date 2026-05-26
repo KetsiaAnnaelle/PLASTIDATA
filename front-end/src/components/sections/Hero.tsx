@@ -4,7 +4,6 @@ import { Button } from '../ui/Button';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 export const Hero: React.FC = () => {
-  // Viewport scroll reveal hook
   const [sectionRef, isRevealed] = useIntersectionObserver(0.1);
 
   return (
@@ -13,7 +12,6 @@ export const Hero: React.FC = () => {
       className={`hero-section reveal-section ${isRevealed ? 'revealed' : ''}`}
     >
       <div className="container hero-grid">
-        {/* Left Side: Text Details */}
         <div className="hero-content">
           <Badge className="reveal-item">La data au cœur de la plasturgie</Badge>
           <h1 className="hero-title reveal-item">
@@ -49,7 +47,6 @@ export const Hero: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Side: Real Dashboard Screenshot */}
         <div className="hero-visual reveal-item">
           <div className="dashboard-browser-mockup">
             <div className="browser-header">

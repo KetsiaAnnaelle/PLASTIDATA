@@ -1,19 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import { API_URL } from '../../config';
-
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User, Building2, Mail, Lock, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import { Header } from '../sections/Header';
 import { Footer } from '../sections/Footer';
+import { API_URL } from '../../config';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export const RegisterPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
+  const { isAuthenticated } = useAuthStore();
+  const navigate = useNavigate();
 
-  // Form validation schema with Yup
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+
   const validationSchema = Yup.object({
     name: Yup.string()
       .min(2, 'Le nom complet doit contenir au moins 2 caractères')
@@ -45,7 +52,6 @@ export const RegisterPage: React.FC = () => {
     },
     validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
-      console.log('Account registered:', values);
       try {
         await axios.post(`${API_URL}/register/`, {
           name: values.name,
@@ -65,7 +71,6 @@ export const RegisterPage: React.FC = () => {
 
   return (
     <div className="auth-page-wrapper">
-      {/* Background ambient lighting glows */}
       <div className="auth-glow-1" />
       <div className="auth-glow-2" />
 
@@ -74,7 +79,6 @@ export const RegisterPage: React.FC = () => {
       <main className="flex-grow flex items-center justify-center py-12 px-4">
         <div className="auth-container">
           <div className="auth-card animate-slide-up">
-            {/* Header info with official brand logo */}
             <div className="auth-header">
               <img src="/img/logo-plastidata.png" alt="PlastiData Logo" className="auth-logo" />
               <h1>Créer un compte</h1>
@@ -98,7 +102,6 @@ export const RegisterPage: React.FC = () => {
               </div>
             ) : (
               <form onSubmit={formik.handleSubmit} className="flex flex-col gap-1">
-                {/* Full Name */}
                 <div className="auth-form-group">
                   <label htmlFor="name" className="auth-label">
                     Nom et prénom
@@ -127,7 +130,6 @@ export const RegisterPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Company Name */}
                 <div className="auth-form-group">
                   <label htmlFor="company" className="auth-label">
                     Nom de l'entreprise
@@ -156,7 +158,6 @@ export const RegisterPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Email Address */}
                 <div className="auth-form-group">
                   <label htmlFor="email" className="auth-label">
                     Adresse email
@@ -185,7 +186,6 @@ export const RegisterPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Password */}
                 <div className="auth-form-group">
                   <label htmlFor="password" className="auth-label">
                     Mot de passe
@@ -221,7 +221,6 @@ export const RegisterPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Confirm Password */}
                 <div className="auth-form-group">
                   <label htmlFor="confirmPassword" className="auth-label">
                     Confirmer le mot de passe
@@ -250,7 +249,6 @@ export const RegisterPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Terms checkbox */}
                 <div className="auth-form-group">
                   <label className="auth-checkbox-label">
                     <input
@@ -272,15 +270,10 @@ export const RegisterPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Submit Action using Brand Red Button */}
-                <button
-                  type="submit"
-                  className="auth-btn-submit"
-                >
+                <button type="submit" className="auth-btn-submit">
                   Créer mon compte
                 </button>
 
-                {/* Footer redirection to Login */}
                 <div className="auth-footer">
                   <p>
                     Déjà inscrit ?{' '}

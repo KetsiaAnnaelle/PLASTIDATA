@@ -3,10 +3,11 @@ import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Mail, Globe } from 'lucide-react';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export const Contact: React.FC = () => {
-  // Viewport scroll reveal hook
   const [sectionRef, isRevealed] = useIntersectionObserver();
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <section 
@@ -43,7 +44,7 @@ export const Contact: React.FC = () => {
           
           <div className="contact-action-block">
             <Button
-              href="/contact"
+              href={isAuthenticated ? "/contact?need=demo" : "/login?redirect=/contact?need=demo"}
               variant="primary"
               className="cta-demo-btn"
             >

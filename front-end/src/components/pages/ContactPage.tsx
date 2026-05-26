@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import { API_URL } from '../../config';
-
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Header } from '../sections/Header';
 import { Footer } from '../sections/Footer';
 import { useAuthStore } from '../../store/useAuthStore';
+import { API_URL } from '../../config';
 
 export const ContactPage: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
   const { isAuthenticated } = useAuthStore();
+  const [searchParams] = useSearchParams();
+  const initialNeed = searchParams.get('need') || '';
 
-  // Form validation schema matching the premium design requirements
   const validationSchema = Yup.object({
     name: Yup.string()
       .min(2, 'Le nom doit contenir au moins 2 caractères')
@@ -38,18 +38,16 @@ export const ContactPage: React.FC = () => {
       .required('Le message ne peut pas être vide'),
   });
 
-  // Formik configuration
   const formik = useFormik({
     initialValues: {
       name: '',
       company: '',
-      need: '',
+      need: initialNeed,
       selectedDashboards: [] as string[],
       message: '',
     },
     validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
-      console.log('Contact form submitted with values:', values);
       try {
         await axios.post(`${API_URL}/contact/`, {
           name: values.name,
@@ -71,24 +69,17 @@ export const ContactPage: React.FC = () => {
 
   return (
     <div className="contact-page-wrapper flex flex-col min-h-screen">
-      {/* HEADER */}
       <Header />
 
       <main className="flex-grow">
-        {/* HERO */}
         <section className="contact-hero">
-             <img src="/img/img-contact.svg" alt="logo" className='contact-hero-icon w-60 h-60'/>
-        
+          <img src="/img/img-contact.svg" alt="logo" className="contact-hero-icon w-60 h-60" />
           <h1>Contactez-nous</h1>
           <p>Discutons de votre projet d'amélioration qualité</p>
         </section>
 
-        {/* CONTENT */}
         <div className="contact-content">
-          
-          {/* Left Column: Parlons de votre projet content checklist */}
           <div className="contact-left-col">
-            {/* INTRO */}
             <div className="contact-intro">
               <h2>Parlons de votre projet</h2>
               <p>
@@ -96,12 +87,10 @@ export const ContactPage: React.FC = () => {
               </p>
             </div>
 
-            {/* SOUS-TEXTE */}
             <p className="contact-subtext">
               Remplissez le formulaire ci-contre et nous vous recontacterons dans les 24&nbsp;heures pour échanger sur vos besoins.
             </p>
 
-            {/* EMAIL */}
             <div className="contact-email-info">
               <div className="contact-icon-box">
                 <svg viewBox="0 0 24 24">
@@ -119,7 +108,6 @@ export const ContactPage: React.FC = () => {
               </div>
             </div>
 
-            {/* FEATURES */}
             <div className="contact-features-card">
               <h3>Ce que nous pouvons faire pour vous</h3>
               <ul>
@@ -143,7 +131,6 @@ export const ContactPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column: Form Card */}
           <div className="contact-right-col">
             <div className="contact-form-card">
               {submitted ? (
@@ -168,7 +155,6 @@ export const ContactPage: React.FC = () => {
                 <form onSubmit={formik.handleSubmit} id="formContent">
                   <h2>Envoyez-nous un message</h2>
 
-                  {/* Name Field */}
                   <div className="contact-field">
                     <label htmlFor="name">Nom et prénom</label>
                     <input
@@ -188,7 +174,6 @@ export const ContactPage: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Company Field */}
                   <div className="contact-field">
                     <label htmlFor="company">Entreprise</label>
                     <input
@@ -208,7 +193,6 @@ export const ContactPage: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Need Select Field */}
                   <div className="contact-field">
                     <label htmlFor="need">Besoin</label>
                     <div className="contact-select-wrap">
@@ -219,7 +203,6 @@ export const ContactPage: React.FC = () => {
                         value={formik.values.need}
                         onChange={(e) => {
                           formik.handleChange(e);
-                          // Clear dashboards if the user changes the need from demo to something else
                           if (e.target.value !== 'demo') {
                             formik.setFieldValue('selectedDashboards', []);
                           }
@@ -240,7 +223,6 @@ export const ContactPage: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Dashboard Select Checklist or Auth Guard (only when Demander une démo is chosen) */}
                   {formik.values.need === 'demo' && (
                     isAuthenticated ? (
                       <div className="contact-field animate-fade-in" style={{ animationDuration: '0.3s' }}>
@@ -304,7 +286,6 @@ export const ContactPage: React.FC = () => {
                     )
                   )}
 
-                  {/* Message Field */}
                   <div className="contact-field">
                     <label htmlFor="message">Message</label>
                     <textarea
@@ -323,7 +304,6 @@ export const ContactPage: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Submit button or redirect action */}
                   {formik.values.need === 'demo' && !isAuthenticated ? (
                     <Link
                       to="/login"
@@ -344,7 +324,6 @@ export const ContactPage: React.FC = () => {
         </div>
       </main>
 
-      {/* FOOTER */}
       <Footer />
     </div>
   );

@@ -4,7 +4,6 @@ import { BookOpen } from 'lucide-react';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 export const Method: React.FC = () => {
-  // Viewport scroll reveal hook
   const [sectionRef, isRevealed] = useIntersectionObserver();
 
   const steps = [
@@ -37,9 +36,8 @@ export const Method: React.FC = () => {
       id="methode"
     >
       <div className="container method-grid">
-        {/* Left Side: Ebook Cover Showcase with Solid Cyan Accent Badge */}
         <div className="ebook-card reveal-item">
-          <div className="ebook-badge">EBOOK OFFERT</div> {/* Styled in solid danger cyan */}
+          <div className="ebook-badge">EBOOK OFFERT</div>
           <div className="ebook-icon">
             <BookOpen size={48} />
           </div>
@@ -53,7 +51,6 @@ export const Method: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Side: Step Checklist */}
         <div className="method-content">
           <Badge className="reveal-item">De la méthode aux décisions</Badge>
           <h2 className="section-title reveal-item">

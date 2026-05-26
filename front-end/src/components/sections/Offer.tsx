@@ -4,7 +4,6 @@ import { BookOpen, BarChart3, Users } from 'lucide-react';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 export const Offer: React.FC = () => {
-  // Viewport scroll reveal hook
   const [sectionRef, isRevealed] = useIntersectionObserver();
 
   const offers = [

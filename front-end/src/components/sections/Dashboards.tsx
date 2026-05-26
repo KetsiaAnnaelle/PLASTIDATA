@@ -10,10 +10,8 @@ interface DashboardItem {
 }
 
 export const Dashboards: React.FC = () => {
-  // Viewport scroll reveal hook
   const [sectionRef, isRevealed] = useIntersectionObserver();
 
-  // Config for the 4 industrial dashboards
   const dashboards: DashboardItem[] = [
     {
       id: 'qualite',
@@ -70,7 +68,6 @@ export const Dashboards: React.FC = () => {
           {dashboards.map((card) => {
             return (
               <article key={card.id} className="dashboard-card reveal-item">
-                {/* Real Dashboard Screenshot Container */}
                 <div className="dashboard-preview-container" style={{ height: '240px', overflow: 'hidden', borderBottom: '1px solid #e2e8f0', position: 'relative' }}>
                   <img
                     src={dashboardImages[card.id]}
@@ -86,7 +83,6 @@ export const Dashboards: React.FC = () => {
                   />
                 </div>
 
-                {/* Dashboard Meta/Description */}
                 <div className="dashboard-body">
                   <h3 className="dashboard-card-title">{card.title}</h3>
                   <p className="dashboard-card-text">{card.desc}</p>
@@ -107,4 +103,3 @@ export const Dashboards: React.FC = () => {
     </section>
   );
 };
-

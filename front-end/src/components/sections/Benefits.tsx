@@ -2,14 +2,13 @@ import React from 'react';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 export const Benefits: React.FC = () => {
-  // Viewport scroll reveal hook
   const [sectionRef, isRevealed] = useIntersectionObserver();
 
   const benefitItems = [
     {
       highlight: '-20 à -40%',
       text: 'de défauts grâce à un meilleur pilotage',
-      isDangerHighlight: true, // Special cyan contrast highlight on dark background
+      isDangerHighlight: true,
     },
     {
       highlight: 'Gain de temps',

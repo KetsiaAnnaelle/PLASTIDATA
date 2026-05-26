@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { Menu, X, LogOut, Trash2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { useAuthStore } from '../../store/useAuthStore';
 import axios from 'axios';
 import { API_URL } from '../../config';
-
 
 export const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const { user, isAuthenticated, logout } = useAuthStore();
+  const navigate = useNavigate();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -21,6 +21,18 @@ export const Header: React.FC = () => {
     setMobileMenuOpen(false);
   };
 
+  const handleLogout = () => {
+    logout();
+    setDropdownOpen(false);
+    navigate('/login');
+  };
+
+  const handleMobileLogout = () => {
+    logout();
+    closeMobileMenu();
+    navigate('/login');
+  };
+
   const handleDeleteAccount = async () => {
     const confirmed = window.confirm(
       "Êtes-vous sûr de vouloir supprimer définitivement votre compte PlastiData ? Cette action est irréversible."
@@ -28,7 +40,6 @@ export const Header: React.FC = () => {
     if (!confirmed) return;
 
     try {
-      // Get the current token from useAuthStore
       const token = useAuthStore.getState().accessToken;
       
       await axios.delete(`${API_URL}/user/delete/`, {
@@ -40,6 +51,7 @@ export const Header: React.FC = () => {
       alert("Votre compte a été supprimé avec succès.");
       logout();
       setDropdownOpen(false);
+      navigate('/login');
     } catch (error) {
       console.error("Account deletion failed:", error);
       alert("Une erreur est survenue lors de la suppression du compte.");
@@ -59,80 +71,75 @@ export const Header: React.FC = () => {
   return (
     <header className="header">
       <div className="container nav-container">
-        {/* Brand Logo */}
         <Link to="/" className="logo" aria-label="Accueil PlastiData">
-          <img src="/img/logo-plastidata.png" alt="logo" className='w-34 h-34'/>
+          <img src="/img/logo-plastidata.png" alt="logo" className="w-34 h-34" />
         </Link>
 
-        {/* Desktop Navigation Links */}
         <nav className="desktop-nav">
           {navigationLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="nav-link"
-            >
+            <a key={link.label} href={link.href} className="nav-link">
               {link.label}
             </a>
           ))}
         </nav>
 
-        {/* Desktop CTA Actions */}
-        <div className="header-actions" style={{ display: 'flex', alignItems: 'center' }}>
+        <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           {isAuthenticated ? (
-            <div 
-              className="user-menu-container" 
-              style={{ marginRight: '24px' }}
-              onMouseLeave={() => setDropdownOpen(false)}
-            >
+            <>
+              <Button href="/contact" variant="primary" className="header-btn">
+                Démo
+              </Button>
               <div 
-                className="user-avatar" 
-                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="user-menu-container" 
+                onMouseLeave={() => setDropdownOpen(false)}
               >
-                {firstLetter}
-              </div>
-              {dropdownOpen && (
-                <div className="user-dropdown animate-fade-in">
-                  <div className="user-info-section">
-                    <div className="user-info-name">{user?.name}</div>
-                    <div className="user-info-company">{user?.company}</div>
-                  </div>
-                  <button 
-                    type="button" 
-                    className="user-logout-btn"
-                    style={{ marginBottom: '4px' }}
-                    onClick={() => {
-                      logout();
-                      setDropdownOpen(false);
-                    }}
-                  >
-                    <LogOut size={15} />
-                    Se déconnecter
-                  </button>
-                  <button 
-                    type="button" 
-                    className="user-delete-btn"
-                    onClick={handleDeleteAccount}
-                  >
-                    <Trash2 size={15} />
-                    Supprimer le compte
-                  </button>
+                <div 
+                  className="user-avatar" 
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                >
+                  {firstLetter}
                 </div>
-              )}
-            </div>
+                {dropdownOpen && (
+                  <div className="user-dropdown animate-fade-in">
+                    <div className="user-info-section">
+                      <div className="user-info-name">{user?.name}</div>
+                      <div className="user-info-company">{user?.company}</div>
+                    </div>
+                    <button 
+                      type="button" 
+                      className="user-logout-btn"
+                      style={{ marginBottom: '4px' }}
+                      onClick={handleLogout}
+                    >
+                      <LogOut size={15} />
+                      Se déconnecter
+                    </button>
+                    <button 
+                      type="button" 
+                      className="user-delete-btn"
+                      onClick={handleDeleteAccount}
+                    >
+                      <Trash2 size={15} />
+                      Supprimer le compte
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
           ) : (
-            <Link to="/login" className="nav-link" style={{ marginRight: '24px', fontWeight: 'bold' }}>
-              Connexion
-            </Link>
+            <>
+              <Link to="/login" className="nav-link" style={{ fontWeight: 'bold' }}>
+                Connexion
+              </Link>
+              <Button href="/contact" variant="primary" className="header-btn">
+                Démo
+              </Button>
+            </>
           )}
-         
         </div>
 
-        {/* Mobile controls: CTA button and Hamburger Toggle side-by-side */}
         <div className="mobile-navbar-controls">
-          <Button href="/contact" variant="primary" className="header-btn-mobile">
-            Démo
-          </Button>
+          
           <button
             type="button"
             className="mobile-toggle"
@@ -145,17 +152,14 @@ export const Header: React.FC = () => {
       </div>
       
       <div className="bg-white">
-
-        {/* Mobile Navigation Drawer Overlay */}
         {mobileMenuOpen && (
           <div className="mobile-overlay bg-white animate-fade-in" onClick={closeMobileMenu} />
         )}
 
-        {/* Mobile Navigation Drawer */}
         <div className={`mobile-drawer ${mobileMenuOpen ? 'open' : ''}`}>
           <div className="mobile-drawer-header bg-white">
             <Link to="/" className="logo" onClick={closeMobileMenu}>
-              <img src="/img/logo-plastidata.png" alt="logo" className='w-24 h-24'/>
+              <img src="/img/logo-plastidata.png" alt="logo" className="w-24 h-24" />
             </Link>
             <button type="button" className="close-btn" onClick={closeMobileMenu}>
               <X size={26} />
@@ -175,24 +179,11 @@ export const Header: React.FC = () => {
             
             {isAuthenticated ? (
               <>
-                <div className="mobile-user-profile bg-white">
-                  <div className="mobile-user-flex">
-                    <div className="user-avatar" style={{ width: '36px', height: '36px', fontSize: '14px', flexShrink: 0 }}>
-                      {firstLetter}
-                    </div>
-                    <div className="mobile-user-details">
-                      <span className="mobile-user-name">{user?.name}</span>
-                      <span className="mobile-user-company">{user?.company}</span>
-                    </div>
-                  </div>
-                </div>
+                
                 <button
                   type="button"
                   className="mobile-nav-link font-bold text-left w-full"
-                  onClick={() => {
-                    logout();
-                    closeMobileMenu();
-                  }}
+                  onClick={handleMobileLogout}
                   style={{ color: 'var(--danger)', borderBottom: '1px solid var(--border-color)', background: 'none', border: 'none', cursor: 'pointer' }}
                 >
                   Se déconnecter
@@ -219,15 +210,6 @@ export const Header: React.FC = () => {
                 Connexion
               </Link>
             )}
-
-            {/* <Button
-              href="/contact"
-              variant="primary"
-              className="mobile-cta-btn"
-              onClick={closeMobileMenu}
-            >
-              Demander une démo
-            </Button> */}
           </nav>
         </div>
       </div>
