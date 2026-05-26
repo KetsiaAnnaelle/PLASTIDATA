@@ -13,7 +13,6 @@ from .serializers import (
     MyTokenObtainPairSerializer
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
-
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class ContactMessageCreateView(generics.CreateAPIView):
@@ -31,6 +30,216 @@ class ContactMessageCreateView(generics.CreateAPIView):
             )
         return super().post(request, *args, **kwargs)
 
+    def perform_create(self, serializer):
+        email = self.request.data.get('email')
+        if self.request.user.is_authenticated:
+            email = self.request.user.email
+            
+        instance = serializer.save(email=email)
+        self.send_contact_emails(instance)
+
+    def send_contact_emails(self, instance):
+        need_mapping = {
+            'guide': 'Obtenir le guide PlastiData',
+            'demo': 'Demander une démonstration (Tableaux de bord)',
+            'conference': 'Intervention / Conférence',
+            'other': 'Autre demande'
+        }
+        need_label = need_mapping.get(instance.need, instance.need)
+        user_email = instance.email
+
+        # 1. NOTIFICATION EMAIL TO SITE ADMINS
+        admin_subject = f"[PlastiData] Nouvelle Demande - {need_label} par {instance.name}"
+        
+        dashboards_html = ""
+        if instance.need == 'demo' and instance.selected_dashboards:
+            db_mapping = {
+                'qualite': 'Dashboard Qualité',
+                'process': 'Dashboard Process',
+                'donnees': 'Dashboard Données',
+                'organisation': 'Dashboard Organisation'
+            }
+            db_labels = [db_mapping.get(db, db) for db in instance.selected_dashboards]
+            dashboards_html = f"""
+            <tr style="border-bottom: 1px solid #e2e8f0;">
+              <td style="padding: 12px; font-weight: bold; color: #044776; width: 180px; font-size: 14px;">Tableaux demandés :</td>
+              <td style="padding: 12px; color: #475569; font-size: 14px;">{', '.join(db_labels)}</td>
+            </tr>
+            """
+
+        admin_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background-color: #f8fafc; margin: 0; padding: 0; }}
+            .container {{ max-width: 600px; margin: 30px auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(15,23,42,0.03); }}
+            .header {{ background-color: #044776; padding: 24px; text-align: center; border-bottom: 4px solid #dc2626; }}
+            .content {{ padding: 36px 32px; }}
+            .title {{ font-size: 20px; font-weight: bold; color: #044776; margin-top: 0; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0; }}
+            .table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
+            .msg-box {{ background-color: #f1f5f9; border-left: 4px solid #dc2626; padding: 16px; border-radius: 8px; margin-top: 15px; font-style: italic; color: #475569; font-size: 14px; line-height: 1.6; }}
+            .footer {{ background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; }}
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h2 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: bold;">PlastiData Administration</h2>
+            </div>
+            <div class="content">
+              <div class="title">Nouvelle demande de contact en ligne</div>
+              <p style="font-size: 15px; color: #475569; margin-top: 0; margin-bottom: 20px;">Un nouveau formulaire a été complété sur la plateforme de démonstration PlastiData.</p>
+              
+              <table class="table">
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 12px; font-weight: bold; color: #044776; width: 180px; font-size: 14px;">Nom / Prénom :</td>
+                  <td style="padding: 12px; color: #475569; font-size: 14px;">{instance.name}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 12px; font-weight: bold; color: #044776; font-size: 14px;">Entreprise :</td>
+                  <td style="padding: 12px; color: #475569; font-size: 14px;">{instance.company}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 12px; font-weight: bold; color: #044776; font-size: 14px;">Adresse email :</td>
+                  <td style="padding: 12px; color: #475569; font-size: 14px;">{user_email or 'Non fournie (visiteur anonyme)'}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 12px; font-weight: bold; color: #044776; font-size: 14px;">Type de besoin :</td>
+                  <td style="padding: 12px; color: #dc2626; font-size: 14px; font-weight: bold;">{need_label}</td>
+                </tr>
+                {dashboards_html}
+              </table>
+              
+              <div style="font-weight: bold; color: #044776; font-size: 14px; margin-top: 24px;">Message d'accompagnement :</div>
+              <div class="msg-box">
+                "{instance.message}"
+              </div>
+            </div>
+            <div class="footer">
+              Ce courriel a été émis automatiquement par la plateforme PlastiData.
+            </div>
+          </div>
+        </body>
+        </html>
+        """
+
+        admin_email_msg = EmailMultiAlternatives(
+            admin_subject,
+            f"Nouvelle demande de {instance.name} ({instance.company})\nEmail: {user_email}\nBesoin: {need_label}\nMessage: {instance.message}",
+            settings.DEFAULT_FROM_EMAIL,
+            [settings.DEFAULT_FROM_EMAIL]
+        )
+        admin_email_msg.attach_alternative(admin_html, "text/html")
+        try:
+            admin_email_msg.send()
+        except Exception as e:
+            print(f"Error sending admin email notification: {e}")
+
+        # 2. THANK YOU EMAIL TO THE USER
+        if user_email:
+            user_subject = f"PlastiData - Nous avons bien reçu votre demande"
+            
+            user_need_desc = ""
+            if instance.need == 'demo':
+                user_need_desc = "d'une démonstration personnalisée de nos 4 tableaux de bord Power BI"
+            elif instance.need == 'guide':
+                user_need_desc = "d'obtention de notre guide méthodologique pour la plasturgie"
+            elif instance.need == 'conference':
+                user_need_desc = "d'une intervention sur site ou d'une conférence industrielle"
+            else:
+                user_need_desc = "de contact et de renseignements concernant nos solutions"
+
+            user_html = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <style>
+                body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background-color: #f8fafc; margin: 0; padding: 0; }}
+                .container {{ max-width: 600px; margin: 40px auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(15,23,42,0.03); }}
+                .header {{ background-color: #ffffff; padding: 24px; text-align: center; border-bottom: 4px solid #dc2626; }}
+                .logo-img {{ height: 48px; display: inline-block; }}
+                .content {{ padding: 40px 32px; }}
+                .welcome {{ font-size: 22px; font-weight: 800; color: #044776; margin-top: 0; margin-bottom: 18px; }}
+                p {{ font-size: 15px; line-height: 1.6; color: #475569; margin-top: 0; margin-bottom: 16px; }}
+                .highlight {{ background-color: #f1f5f9; border-left: 4px solid #044776; padding: 18px; border-radius: 8px; margin: 24px 0; }}
+                .btn-cta {{ display: inline-block; background-color: #dc2626; color: #ffffff !important; padding: 12px 28px; border-radius: 999px; font-weight: 700; text-decoration: none; font-size: 15px; margin-top: 10px; box-shadow: 0 4px 10px rgba(220,38,38,0.15); }}
+                .footer {{ background-color: #f8fafc; padding: 24px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; }}
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <img src="cid:logo" alt="PlastiData Logo" class="logo-img" />
+                </div>
+                <div class="content">
+                  <h2 class="welcome">Bonjour {instance.name},</h2>
+                  <p>Nous vous remercions sincèrement pour l'intérêt que vous portez à <strong>PlastiData</strong>.</p>
+                  
+                  <p>Votre demande de prise de contact concernant <strong>{user_need_desc}</strong> pour l'entreprise <strong>{instance.company}</strong> a bien été enregistrée par nos services.</p>
+                  
+                  <div class="highlight">
+                    <p style="margin: 0; font-weight: bold; color: #044776; margin-bottom: 6px; font-size: 14px;">Résumé de votre message :</p>
+                    <p style="margin: 0; font-style: italic; font-size: 13px; color: #475569; line-height: 1.5;">"{instance.message}"</p>
+                  </div>
+                  
+                  <p><strong>Notre équipe s'engage à traiter votre demande sous 24 heures</strong>. Un de nos ingénieurs conseils spécialisés en plasturgie étudie votre message et vous contactera par email ou par téléphone pour planifier notre prochain échange opérationnel.</p>
+                  
+                  <p>En attendant, vous pouvez à tout moment découvrir notre site internet et nos fiches conseils.</p>
+                  
+                  <div style="text-align: center; margin-top: 28px;">
+                    <a href="https://www.plastidata.fr" class="btn-cta">Consulter notre site web</a>
+                  </div>
+                </div>
+                <div class="footer">
+                  <div>Vous recevez ce courriel suite à l'envoi d'un formulaire de contact sur PlastiData.</div>
+                  <div style="margin-top: 8px;">
+                    <a href="https://www.plastidata.fr" style="color: #dc2626; text-decoration: none; font-weight: bold;">www.plastidata.fr</a>
+                  </div>
+                </div>
+              </div>
+            </body>
+            </html>
+            """
+            
+            user_text_fallback = (
+                f"Bonjour {instance.name},\n\n"
+                f"Nous vous remercions pour votre démarche sur PlastiData.\n\n"
+                f"Votre demande concernant {user_need_desc} pour l'entreprise {instance.company} a bien été reçue.\n"
+                f"Notre équipe va traiter votre demande sous un délai de moins de 24 heures.\n\n"
+                f"Résumé de votre message :\n"
+                f"\"{instance.message}\"\n\n"
+                f"Cordialement,\n"
+                f"L'équipe PlastiData\n"
+                f"https://www.plastidata.fr"
+            )
+            
+            user_email_msg = EmailMultiAlternatives(
+                user_subject,
+                user_text_fallback,
+                settings.DEFAULT_FROM_EMAIL,
+                [user_email]
+            )
+            user_email_msg.attach_alternative(user_html, "text/html")
+            
+            logo_path = os.path.join(settings.BASE_DIR, '..', '..', 'front-end', 'public', 'img', 'logo-plastidata.png')
+            if os.path.exists(logo_path):
+                try:
+                    with open(logo_path, 'rb') as f:
+                        logo_img = MIMEImage(f.read())
+                        logo_img.add_header('Content-ID', '<logo>')
+                        logo_img.add_header('Content-Disposition', 'inline', filename='logo-plastidata.png')
+                        user_email_msg.attach(logo_img)
+                except Exception as e:
+                    print(f"Error attaching logo to user confirmation: {e}")
+
+            try:
+                user_email_msg.send()
+            except Exception as e:
+                print(f"Error sending user confirmation email: {e}")
+
 
 class UserRegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -46,7 +255,6 @@ class UserRegisterView(generics.CreateAPIView):
         subject = "Votre Ebook PlastiData Gratuit !"
         company_name = user.profile.company if hasattr(user, 'profile') else 'votre usine'
         
-        # Plaintext fallback body
         text_content = (
             f"Bonjour {user.first_name},\n\n"
             f"Félicitations pour votre inscription sur PlastiData !\n"
@@ -57,7 +265,6 @@ class UserRegisterView(generics.CreateAPIView):
             f"https://www.plastidata.fr"
         )
 
-        # High-quality HTML template styled with site colors (corporate blue #044776 and bright red #dc2626 accents)
         html_content = f"""
         <!DOCTYPE html>
         <html>
@@ -85,7 +292,7 @@ class UserRegisterView(generics.CreateAPIView):
               background-color: #ffffff;
               padding: 24px;
               text-align: center;
-              border-bottom: 4px solid #dc2626; /* Site brand red accent line */
+              border-bottom: 4px solid #dc2626;
             }}
             .logo-img {{
               height: 48px;
@@ -97,7 +304,7 @@ class UserRegisterView(generics.CreateAPIView):
             .welcome-title {{
               font-size: 22px;
               font-weight: 800;
-              color: #044776; /* Brand Primary Corporate Blue */
+              color: #044776;
               margin-top: 0;
               margin-bottom: 20px;
             }}
@@ -128,7 +335,7 @@ class UserRegisterView(generics.CreateAPIView):
             }}
             .btn-cta {{
               display: inline-block;
-              background-color: #dc2626; /* Brand Danger Red Button */
+              background-color: #dc2626;
               color: #ffffff !important;
               padding: 12px 28px;
               border-radius: 999px;
@@ -197,7 +404,6 @@ class UserRegisterView(generics.CreateAPIView):
         )
         email.attach_alternative(html_content, "text/html")
 
-        # 1. Attach inline brand logo via Content-ID (CID)
         logo_path = os.path.join(settings.BASE_DIR, '..', '..', 'front-end', 'public', 'img', 'logo-plastidata.png')
         if os.path.exists(logo_path):
             try:
@@ -209,18 +415,15 @@ class UserRegisterView(generics.CreateAPIView):
             except Exception as e:
                 print(f"Error attaching logo: {e}")
 
-        # 2. Attach Ebook PDF if it exists on server
         ebook_path = os.path.join(settings.BASE_DIR, 'ebook-plastidata.pdf')
         if os.path.exists(ebook_path):
             email.attach_file(ebook_path)
         else:
-            # Fallback inline explanation if file missing
             email.body += "\n\n(Note: Le fichier PDF de l'Ebook n'était pas disponible sur le serveur.)"
 
         try:
             email.send()
         except Exception as e:
-            # Silent fallback to prevent signup errors if connection fails
             print(f"Error sending email: {e}")
 
 
@@ -250,8 +453,6 @@ import urllib.request
 import urllib.error
 import json
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 
 class PlastiPilotChatView(APIView):
     permission_classes = []
@@ -264,12 +465,10 @@ class PlastiPilotChatView(APIView):
         if not user_message:
             return Response({"error": "Message cannot be empty."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 1. Look for Anthropic API Key in environment
         api_key = os.environ.get('ANTHROPIC_API_KEY') or getattr(settings, 'ANTHROPIC_API_KEY', None)
 
         if api_key:
             try:
-                # Format history for Anthropic API
                 messages = []
                 for h in history:
                     messages.append({
@@ -278,7 +477,6 @@ class PlastiPilotChatView(APIView):
                     })
                 messages.append({"role": "user", "content": user_message})
 
-                # Call Anthropic API using standard urllib
                 headers = {
                     'x-api-key': api_key,
                     'anthropic-version': '2023-06-01',
@@ -304,7 +502,6 @@ class PlastiPilotChatView(APIView):
             except Exception as e:
                 print(f"Error calling Claude: {e}")
 
-        # 2. Smart local rule-based assistant fallback
         lower_msg = user_message.lower()
         reply = ""
 
@@ -391,10 +588,7 @@ class PlastiPilotChatView(APIView):
                 "Dites-moi si vous rencontrez en ce moment un problème de **PPM en hausse**, de **TRS bas**, de **Cpk insuffisant** ou de **suivi de vos plans d'actions** !"
             )
 
-        # Append standard CTA to answers if not general greeting
         if any(kw in lower_msg for kw in ["ppm", "trs", "cpk", "action", "devis", "prix", "plastidata", "solution"]):
             reply += "\n\n[Demander un devis personnalisé](https://linkedin.com/company/plastidata) — Deborah vous répond sous 24h."
 
         return Response({"reply": reply})
-
-

@@ -5,7 +5,7 @@ from .models import UserProfile, ContactMessage
 class ContactMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactMessage
-        fields = ['id', 'name', 'company', 'need', 'selected_dashboards', 'message', 'created_at']
+        fields = ['id', 'name', 'email', 'company', 'need', 'selected_dashboards', 'message', 'created_at']
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     company = serializers.CharField(max_length=255, write_only=True)

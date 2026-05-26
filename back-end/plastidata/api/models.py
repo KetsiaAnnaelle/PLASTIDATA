@@ -10,6 +10,7 @@ class UserProfile(models.Model):
 
 class ContactMessage(models.Model):
     name = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255, blank=True, null=True)
     company = models.CharField(max_length=255)
     need = models.CharField(max_length=100) # 'guide', 'demo', 'conference', 'other'
     selected_dashboards = models.JSONField(default=list, blank=True)

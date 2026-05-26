@@ -18,6 +18,14 @@ export const ContactPage: React.FC = () => {
     name: Yup.string()
       .min(2, 'Le nom doit contenir au moins 2 caractères')
       .required('Nom et prénom requis'),
+    email: Yup.string().test(
+      'email-required-when-unauthenticated',
+      'Une adresse email valide est requise',
+      function (value) {
+        if (isAuthenticated) return true;
+        return typeof value === 'string' && /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value);
+      }
+    ),
     company: Yup.string()
       .required('Nom de votre entreprise requis'),
     need: Yup.string()
@@ -41,6 +49,7 @@ export const ContactPage: React.FC = () => {
   const formik = useFormik({
     initialValues: {
       name: '',
+      email: '',
       company: '',
       need: initialNeed,
       selectedDashboards: [] as string[],
@@ -49,13 +58,24 @@ export const ContactPage: React.FC = () => {
     validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        await axios.post(`${API_URL}/contact/`, {
-          name: values.name,
-          company: values.company,
-          need: values.need,
-          selected_dashboards: values.need === 'demo' ? values.selectedDashboards : [],
-          message: values.message,
-        });
+        const token = useAuthStore.getState().accessToken;
+        const headers: Record<string, string> = {};
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        await axios.post(
+          `${API_URL}/contact/`,
+          {
+            name: values.name,
+            email: !isAuthenticated ? values.email : '',
+            company: values.company,
+            need: values.need,
+            selected_dashboards: values.need === 'demo' ? values.selectedDashboards : [],
+            message: values.message,
+          },
+          { headers }
+        );
         setSubmitted(true);
         formik.resetForm();
       } catch (error) {
@@ -173,6 +193,27 @@ export const ContactPage: React.FC = () => {
                       </div>
                     )}
                   </div>
+
+                  {!isAuthenticated && (
+                    <div className="contact-field animate-fade-in">
+                      <label htmlFor="email">Adresse email</label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="exemple@usine.com"
+                        className={formik.touched.email && formik.errors.email ? 'error' : ''}
+                        value={formik.values.email}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      />
+                      {formik.touched.email && formik.errors.email && (
+                        <div style={{ color: '#dc2626', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '6px' }}>
+                          {formik.errors.email}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div className="contact-field">
                     <label htmlFor="company">Entreprise</label>
